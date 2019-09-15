@@ -2,13 +2,13 @@ const User = require('../models/user')
 
 module.exports = async app => {
   app.get('/', home)
-  app.post('/login', login)
+  app.post('/login', login(app))
   app.post('/signup', signup)
 }
 
 const home = async () => 'CiberMusic Live'
 
-const login = {
+const login = app => ({
   schema: {
     body: {
       type: 'object',
@@ -27,14 +27,14 @@ const login = {
   async handler(request, reply) {
     const user = await User.login(request.body)
     if (user) {
-      const token = user.id // generate token
-      return token
+      const token = app.jwt.sign({ id: user.id })
+      return { token }
     } else {
       reply.code(401)
       throw new Error('Not authenticated')
     }
   }
-}
+})
 
 const signup = {
   schema: {

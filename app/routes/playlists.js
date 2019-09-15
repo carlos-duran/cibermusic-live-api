@@ -3,10 +3,12 @@ const Playlist = require('../models/playlist')
 module.exports = async app => {
   app.get('/', allPlaylists)
   app.post('/', createPlaylist)
+  app.put('/:playlistId', updatePlaylist)
 }
 
-async function allPlaylists() {
-  return Playlist.find()
+async function allPlaylists(request) {
+  await request.jwtVerify()
+  return Playlist.find({ user: request.user.id })
 }
 
 const createPlaylist = {
@@ -23,6 +25,37 @@ const createPlaylist = {
     }
   },
   async handler(request) {
-    return Playlist.create(request.body)
+    await request.jwtVerify()
+    return Playlist.create({
+      name: request.body.name,
+      user: request.user.id
+    })
+  }
+}
+
+const updatePlaylist = {
+  schema: {
+    body: {
+      type: 'object',
+      required: ['name'],
+      properties: {
+        name: {
+          type: 'string',
+          maxLength: 40
+        }
+      }
+    }
+  },
+  async handler(request) {
+    await request.jwtVerify()
+    return Playlist.update(
+      {
+        _id: request.params.playlistId,
+        user: request.user.id
+      },
+      {
+        name: request.body.name
+      }
+    )
   }
 }

@@ -6,6 +6,7 @@ const mongoose = require('mongoose')
 // Instance app
 const app = fastify({ logger: true })
 app.register(require('fastify-cors'))
+app.register(require('fastify-jwt'), { secret: process.env.JWT_SECRET })
 
 // Load models
 requireDir('./app/models')
