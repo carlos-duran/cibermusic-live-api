@@ -1,16 +1,19 @@
 const Playlist = require('../../models/playlist')
 
 module.exports = async app => {
-  app.get('/', allPlaylists)
-  app.post('/', createPlaylist)
-  app.put('/:playlistId', updatePlaylist)
+  app.get('/', list)
+  app.post('/', create)
+  app.get('/:playlistId', show)
+  app.put('/:playlistId', update)
+  app.post('/:playlistId/song', addSong)
+  app.delete('/:playlistId/song', removeSong)
 }
 
-async function allPlaylists(request) {
-  return Playlist.find({ user: request.user.id })
+async function list(request) {
+  return Playlist.find({ user: request.user.id }, '-songs')
 }
 
-const createPlaylist = {
+const create = {
   schema: {
     body: {
       type: 'object',
@@ -31,7 +34,14 @@ const createPlaylist = {
   }
 }
 
-const updatePlaylist = {
+async function show(request) {
+  return Playlist.findOne({
+    _id: request.params.playlistId,
+    user: request.user.id
+  })
+}
+
+const update = {
   schema: {
     body: {
       type: 'object',
@@ -52,6 +62,60 @@ const updatePlaylist = {
       },
       {
         name: request.body.name
+      }
+    )
+  }
+}
+
+const addSong = {
+  schema: {
+    body: {
+      type: 'object',
+      required: ['id'],
+      properties: {
+        id: {
+          type: 'number'
+        }
+      }
+    }
+  },
+  async handler(request) {
+    return Playlist.update(
+      {
+        _id: request.params.playlistId,
+        user: request.user.id
+      },
+      {
+        $addToSet: {
+          songs: request.body.id
+        }
+      }
+    )
+  }
+}
+
+const removeSong = {
+  schema: {
+    body: {
+      type: 'object',
+      required: ['id'],
+      properties: {
+        id: {
+          type: 'number'
+        }
+      }
+    }
+  },
+  async handler(request) {
+    return Playlist.update(
+      {
+        _id: request.params.playlistId,
+        user: request.user.id
+      },
+      {
+        $pull: {
+          songs: request.body.id
+        }
       }
     )
   }
