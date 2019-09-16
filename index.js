@@ -12,8 +12,7 @@ app.register(require('fastify-jwt'), { secret: process.env.JWT_SECRET })
 requireDir('./app/models')
 
 // Load routes
-app.register(require('./app/routes/home'))
-app.register(require('./app/routes/playlists'), { prefix: '/playlists' })
+app.register(require('./app/routes'))
 
 // Run the app!
 const start = async () => {

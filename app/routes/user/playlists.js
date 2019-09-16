@@ -1,4 +1,4 @@
-const Playlist = require('../models/playlist')
+const Playlist = require('../../models/playlist')
 
 module.exports = async app => {
   app.get('/', allPlaylists)
@@ -7,7 +7,6 @@ module.exports = async app => {
 }
 
 async function allPlaylists(request) {
-  await request.jwtVerify()
   return Playlist.find({ user: request.user.id })
 }
 
@@ -25,7 +24,6 @@ const createPlaylist = {
     }
   },
   async handler(request) {
-    await request.jwtVerify()
     return Playlist.create({
       name: request.body.name,
       user: request.user.id
@@ -47,7 +45,6 @@ const updatePlaylist = {
     }
   },
   async handler(request) {
-    await request.jwtVerify()
     return Playlist.update(
       {
         _id: request.params.playlistId,

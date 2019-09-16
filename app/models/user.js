@@ -5,7 +5,9 @@ const userSchema = new mongoose.Schema(
   {
     email: {
       type: String,
-      required: true
+      required: true,
+      unique: true,
+      lowercase: true
     },
     password: {
       type: String,
@@ -21,12 +23,28 @@ const userSchema = new mongoose.Schema(
       required: true,
       maxlength: 50
     },
-    birth: String,
-    country: String
+    birth: {
+      type: String,
+      regex: /^\d{4}-\d{2}-\d{2}$/
+    },
+    country: {
+      type: String,
+      maxlength: 50
+    },
+    admin: {
+      type: Boolean,
+      default: false
+    }
   },
   {
     toJSON: {
-      virtuals: true
+      getters: true,
+      versionKey: false,
+      transform: (doc, ret) => {
+        delete ret._id
+        delete ret.password
+        return ret
+      }
     },
     timestamps: true
   }

@@ -10,10 +10,14 @@ const playlistSchema = new mongoose.Schema(
       type: mongoose.SchemaTypes.ObjectId,
       ref: 'User',
       required: true
-    }
+    },
+    songs: [Number]
   },
   {
-    toJSON: { virtuals: true },
+    toJSON: {
+      getters: true,
+      versionKey: false
+    },
     timestamps: true
   }
 )

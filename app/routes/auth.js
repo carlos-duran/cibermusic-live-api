@@ -1,18 +1,16 @@
 const User = require('../models/user')
 
 module.exports = async app => {
-  app.get('/', home)
   app.post('/login', login)
   app.post('/signup', signup)
 }
-
-const home = async () => 'CiberMusic Live'
 
 const login = {
   schema: {
     body: {
       type: 'object',
       required: ['email', 'password'],
+      additionalProperties: false,
       properties: {
         email: {
           type: 'string',
@@ -48,6 +46,7 @@ const signup = {
         'birth',
         'country'
       ],
+      additionalProperties: false,
       properties: {
         firstName: {
           type: 'string',
@@ -71,7 +70,8 @@ const signup = {
           format: 'date'
         },
         country: {
-          type: 'string'
+          type: 'string',
+          maxLength: 50
         }
       }
     }
