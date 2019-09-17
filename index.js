@@ -19,7 +19,8 @@ const start = async () => {
   try {
     await mongoose.connect(process.env.MONGODB_URI, {
       useNewUrlParser: true,
-      useUnifiedTopology: true
+      useUnifiedTopology: true,
+      useCreateIndex: true
     })
     await app.listen(3000)
     app.log.info(`Server listening on ${app.server.address().port}`)
