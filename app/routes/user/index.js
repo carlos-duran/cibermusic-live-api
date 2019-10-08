@@ -4,6 +4,7 @@ const { Unauthorized } = require('http-errors')
 module.exports = async app => {
   app.addHook('onRequest', authHook)
 
+  app.get('/user', user)
   app.register(require('./playlists'), { prefix: '/playlists' })
 }
 
@@ -13,6 +14,9 @@ const authHook = async request => {
   if (!user) {
     throw new Unauthorized('Invalid token')
   }
-
   request.user = user
+}
+
+async function user(request) {
+  return request.user
 }
