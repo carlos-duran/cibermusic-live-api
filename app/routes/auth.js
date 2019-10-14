@@ -1,4 +1,5 @@
 const User = require('../models/user')
+const { BadRequest, Unauthorized } = require('http-errors')
 
 module.exports = async app => {
   app.post('/login', login)
@@ -28,8 +29,7 @@ const login = {
       const token = await reply.jwtSign({ id: user.id })
       return { token }
     } else {
-      reply.code(401)
-      throw new Error('Not authenticated')
+      throw new Unauthorized()
     }
   }
 }
@@ -43,7 +43,7 @@ const signup = {
         'lastName',
         'email',
         'password',
-        'birth',
+        'birthdate',
         'country'
       ],
       additionalProperties: false,
@@ -65,7 +65,7 @@ const signup = {
         password: {
           type: 'string'
         },
-        birth: {
+        birthdate: {
           type: 'string',
           format: 'date'
         },
@@ -77,6 +77,14 @@ const signup = {
     }
   },
   async handler(req) {
-    return User.create(req.body)
+    try {
+      return await User.create(req.body)
+    } catch (error) {
+      if (error.code === 11000) {
+        throw new BadRequest('El usuario ya existe')
+      } else {
+        throw new BadRequest(error.message)
+      }
+    }
   }
 }

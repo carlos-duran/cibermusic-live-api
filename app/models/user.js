@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
       maxlength: 50,
       trim: true
     },
-    birth: {
+    birthdate: {
       type: String,
       regex: /^\d{4}-\d{2}-\d{2}$/
     },
@@ -53,7 +53,7 @@ const userSchema = new mongoose.Schema(
 )
 
 userSchema.virtual('age').get(function() {
-  return new Date().getFullYear() - parseInt(this.birth.substring(0, 4))
+  return new Date().getFullYear() - parseInt(this.birthdate.substring(0, 4))
 })
 
 userSchema.pre('save', async function() {
@@ -65,7 +65,7 @@ userSchema.pre('save', async function() {
 
 userSchema.static('login', async function login({ email, password }) {
   const user = await this.findOne({ email })
-  const res = await bcrypt.compare(password, user.password)
+  const res = user && (await bcrypt.compare(password, user.password))
   return res && user
 })
 
