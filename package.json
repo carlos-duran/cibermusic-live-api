@@ -6,7 +6,9 @@
   "scripts": {
     "start": "node index.js",
     "dev": "nodemon index.js",
-    "lint": "eslint --ignore-path .gitignore ."
+    "lint": "eslint --ignore-path .gitignore .",
+    "deploy:uat": "NODE_ENV=uat bin/deploy.js",
+    "deploy:prod": "NODE_ENV=prod bin/deploy.js"
   },
   "author": "",
   "license": "ISC",
@@ -34,7 +36,8 @@
     "husky": "^3.0.5",
     "nodemon": "^1.19.2",
     "prettier": "1.18.2",
-    "prettier-config-standard": "^1.0.1"
+    "prettier-config-standard": "^1.0.1",
+    "shelljs": "^0.8.3"
   },
   "engines": {
     "node": "10.16.3"
