@@ -34,7 +34,7 @@ const start = async () => {
       useUnifiedTopology: true,
       useCreateIndex: true
     })
-    await app.listen(process.env.PORT)
+    await app.listen(process.env.PORT, '0.0.0.0')
     app.log.info(`Server listening on ${app.server.address().port}`)
     app.ready(() => {
       console.log(app.printRoutes())
