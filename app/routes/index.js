@@ -1,6 +1,6 @@
 module.exports = async app => {
   app.get('/', home)
-  
+
   app.register(require('./countries'))
   app.register(require('./auth'))
   app.register(require('./user'))
