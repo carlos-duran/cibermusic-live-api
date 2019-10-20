@@ -31,7 +31,7 @@ async function search(request) {
 }
 
 async function common(request) {
-  const url = 'https://api.deezer.com/playlist/6491645164'
+  const url = 'https://api.deezer.com/artist/8623006/top?limit=50'
   const { data } = await axios.get(url)
   return data
 }
