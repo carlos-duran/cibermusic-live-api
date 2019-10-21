@@ -7,7 +7,8 @@ module.exports = async app => {
 
   app.get('/user', user)
   app.get('/search', search)
-  app.get('/common', common)
+  app.get('/selected-playlists', selectedPlaylists)
+  app.get('/selected-artists', selectedArtists)
   app.register(require('./playlists'), { prefix: '/playlists' })
 }
 
@@ -30,8 +31,23 @@ async function search(request) {
   return data
 }
 
-async function common(request) {
-  const url = 'https://api.deezer.com/artist/8623006/top?limit=50'
-  const { data } = await axios.get(url)
-  return data
+async function selectedPlaylists(request) {
+  const urls = [
+    'https://api.deezer.com/playlist/1306931615', // Best Rock of All Time
+    'https://api.deezer.com/playlist/1180358611' // Rock Love Songs
+  ]
+  const responses = await Promise.all(urls.map(url => axios.get(url)))
+  return responses.map(r => r.data)
+}
+
+async function selectedArtists(request) {
+  const urls = [
+    'https://api.deezer.com/artist/8623006/top?limit=50', // Aimer
+    'https://api.deezer.com/artist/4162/top?limit=50', // Mago de Oz
+    'https://api.deezer.com/artist/469713/top?limit=50', // OOR
+    'https://api.deezer.com/artist/133049/top?limit=50', // EV
+    'https://api.deezer.com/artist/1188/top?limit=50' // Maroon 5
+  ]
+  const responses = await Promise.all(urls.map(url => axios.get(url)))
+  return responses.map(r => r.data)
 }
