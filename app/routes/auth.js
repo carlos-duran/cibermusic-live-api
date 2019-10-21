@@ -81,7 +81,7 @@ const signup = {
       return await User.create(req.body)
     } catch (error) {
       if (error.code === 11000) {
-        throw new BadRequest('El usuario ya existe')
+        throw new BadRequest('El correo electrónico ya está siendo usado')
       } else {
         throw new BadRequest(error.message)
       }

@@ -2,23 +2,12 @@ require('dotenv').config()
 const requireDir = require('require-dir')
 const fastify = require('fastify')
 const mongoose = require('mongoose')
-const { BadRequest } = require('http-errors')
-const localize = require('ajv-i18n')
 
 // Instance app
 const app = fastify({ logger: true })
 app.register(require('fastify-cors'))
 app.register(require('fastify-jwt'), { secret: process.env.JWT_SECRET })
-
-app.setErrorHandler(function(error, request, reply) {
-  if (error.validation) {
-    localize.es(error.validation)
-    const [first] = error.validation
-    reply.send(new BadRequest(`{${first.dataPath.slice(1)}} ${first.message}`))
-  } else {
-    reply.send(error)
-  }
-})
+// app.setErrorHandler(require('./config/error-handler'))
 
 // Load models
 requireDir('./app/models')
