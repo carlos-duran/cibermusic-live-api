@@ -63,7 +63,9 @@ const signup = {
           format: 'email'
         },
         password: {
-          type: 'string'
+          type: 'string',
+          minLength: 8,
+          pattern: '(?=.*[a-z])(?=.*[A-Z])(?=.*d).*'
         },
         birthdate: {
           type: 'string',
@@ -77,6 +79,9 @@ const signup = {
     }
   },
   async handler(req) {
+    if (!isValidBirthdate(req.body.birthdate)) {
+      throw new BadRequest('Usted debe ser mayor de edad.')
+    }
     try {
       return await User.create(req.body)
     } catch (error) {
@@ -87,4 +92,11 @@ const signup = {
       }
     }
   }
+}
+
+function isValidBirthdate(date) {
+  const currentYear = new Date().getFullYear()
+  let [year] = date.split('-')
+  year = parseInt(year)
+  return year >= currentYear - 100 && year <= currentYear - 18
 }
