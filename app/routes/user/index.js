@@ -9,6 +9,7 @@ module.exports = async app => {
   app.get('/search', search)
   app.get('/selected-playlists', selectedPlaylists)
   app.get('/selected-artists', selectedArtists)
+  app.get('/selected-top', selectedTop)
   app.register(require('./playlists'), { prefix: '/playlists' })
 }
 
@@ -35,6 +36,20 @@ async function selectedPlaylists(request) {
   const urls = [
     'https://api.deezer.com/playlist/1306931615', // Best Rock of All Time
     'https://api.deezer.com/playlist/1180358611' // Rock Love Songs
+  ]
+  const responses = await Promise.all(urls.map(url => axios.get(url)))
+  return responses.map(r => r.data)
+}
+
+async function selectedTop(request) {
+  const urls = [
+    'https://api.deezer.com/chart', // Lo mas escuchado
+    'https://api.deezer.com/chart/0/tracks', // best Tracks
+    'https://api.deezer.com/chart/0/albums', // best albums
+    'https://api.deezer.com/chart/0/artists', // best artists
+    'https://api.deezer.com/chart/0/playlists', // best playlists
+    'https://api.deezer.com/genre/122/artists', // Mejores artistas Urbanos
+    'https://api.deezer.com/genre/152/artists' // leyendas del Rock
   ]
   const responses = await Promise.all(urls.map(url => axios.get(url)))
   return responses.map(r => r.data)
