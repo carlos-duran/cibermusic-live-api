@@ -9,12 +9,8 @@ module.exports = async app => {
   app.get('/search', search)
   app.get('/selected-playlists', selectedPlaylists)
   app.get('/selected-artists', selectedArtists)
-  app.get('/selected-top', selectedTop)
-  app.get('/selected-topname', selectedTopName)
-  app.get('/selected-toplist', selectedTopList)
   app.get('/selected-toptracks', selectedTopTracks)
-  app.get('/api', PlaylistName)
-  app.get('/prueba', prueba)
+  app.get('/top-playlists', topPlaylists)
   app.register(require('./playlists'), { prefix: '/playlists' })
 }
 
@@ -46,26 +42,9 @@ async function selectedPlaylists(request) {
   return responses.map(r => r.data)
 }
 
-async function selectedTop(request) {
-  const urls = 'https://api.deezer.com/chart/0/playlists?limit=5'
-  const { data } = await axios.get(urls)
-  return data
-}
 async function selectedTopTracks(request) {
   const urls = 'https://api.deezer.com/chart/0/tracks'
   const { data } = await axios.get(urls)
-  return data
-}
-async function selectedTopList(request) {
-  const urls = await UrlApi()
-  const responses = await Promise.all(urls.map(url => axios.get(url)))
-  return responses.map(r => r.data)
-}
-
-async function selectedTopName(request) {
-  const urls = 'playlists'
-
-  const { data } = await axios.get('https://api.deezer.com/chart/0/' + urls)
   return data
 }
 
@@ -81,48 +60,12 @@ async function selectedArtists(request) {
   return responses.map(r => r.data)
 }
 
-async function idApi() {
-  var id = []
-  var api = await selectedTop()
-  for (const i of api.data) {
-    id.push(i.id)
+async function topPlaylists() {
+  const urlTopPlaylists = 'https://api.deezer.com/chart/0/playlists?limit=5'
+  const { data: topPlaylists } = (await axios.get(urlTopPlaylists)).data
+  for (const playlist of topPlaylists) {
+    const { data: tracklist } = (await axios.get(playlist.tracklist)).data
+    playlist.data = tracklist
   }
-  return id
-}
-async function UrlApi() {
-  var urls = []
-  var id = await idApi()
-  for (const i in id) {
-    urls.push('https://api.deezer.com/playlist/' + id[i] + '/tracks')
-  }
-  console.log('ahora vamos a ver que sale ' + urls)
-  return urls
-}
-
-async function PlaylistName() {
-  var final = []
-  var api = await selectedTopList()
-  var rut = await selectedTopName()
-
-  for (const i in api) {
-    var json = api[i].data.concat([
-      { IdList: rut.data[i].id, NameList: rut.data[i].title }
-    ])
-    // console.log(i.data[i])
-    final.push(json)
-  }
-  return final
-}
-
-async function prueba() {
-  var a = []
-  var p = await PlaylistName()
-
-  for (var i in p) {
-    var z = p[i]
-    for (a in z) {
-      if (z[a].IdList) console.log(z[a].NameList)
-    }
-  }
-  return p[1]
+  return topPlaylists
 }
