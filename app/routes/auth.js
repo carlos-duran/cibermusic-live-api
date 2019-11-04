@@ -65,9 +65,7 @@ const signup = {
         password: {
           type: 'string',
           minLength: 8,
-          pattern: '(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])'
-          // (?=.*\d)(?=.*[a-z])(?=.*[A-Z])
-          // "^(\\([0-9]{3}\\))?[0-9]{3}-[0-9]{4}$"
+          pattern: '(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).*'
         },
         birthdate: {
           type: 'string',

@@ -7,10 +7,7 @@ module.exports = async app => {
 
   app.get('/user', user)
   app.get('/search', search)
-  app.get('/selected-playlists', selectedPlaylists)
-  app.get('/selected-artists', selectedArtists)
-  app.get('/selected-toptracks', selectedTopTracks)
-  app.get('/top-playlists', topPlaylists)
+  app.get('/home-music', homeMusic)
   app.register(require('./playlists'), { prefix: '/playlists' })
 }
 
@@ -33,31 +30,18 @@ async function search(request) {
   return data
 }
 
-async function selectedPlaylists(request) {
-  const urls = [
-    'https://api.deezer.com/playlist/1306931615', // Best Rock of All Time
-    'https://api.deezer.com/playlist/1180358611' // Rock Love Songs
-  ]
-  const responses = await Promise.all(urls.map(url => axios.get(url)))
-  return responses.map(r => r.data)
+async function homeMusic() {
+  return {
+    topTracks: await topTracks(),
+    topPlaylists: await topPlaylists(),
+    selectedPlaylists: await selectedPlaylists()
+  }
 }
 
-async function selectedTopTracks(request) {
-  const urls = 'https://api.deezer.com/chart/0/tracks'
-  const { data } = await axios.get(urls)
+async function topTracks(request) {
+  const url = 'https://api.deezer.com/chart/0/tracks'
+  const { data } = (await axios.get(url)).data
   return data
-}
-
-async function selectedArtists(request) {
-  const urls = [
-    'https://api.deezer.com/artist/8623006/top?limit=50', // Aimer
-    'https://api.deezer.com/artist/4162/top?limit=50', // Mago de Oz
-    'https://api.deezer.com/artist/469713/top?limit=50', // OOR
-    'https://api.deezer.com/artist/133049/top?limit=50', // EV
-    'https://api.deezer.com/artist/1188/top?limit=50' // Maroon 5
-  ]
-  const responses = await Promise.all(urls.map(url => axios.get(url)))
-  return responses.map(r => r.data)
 }
 
 async function topPlaylists() {
@@ -65,7 +49,16 @@ async function topPlaylists() {
   const { data: topPlaylists } = (await axios.get(urlTopPlaylists)).data
   for (const playlist of topPlaylists) {
     const { data: tracklist } = (await axios.get(playlist.tracklist)).data
-    playlist.data = tracklist
+    playlist.tracks = tracklist
   }
   return topPlaylists
+}
+
+async function selectedPlaylists(request) {
+  const urls = [
+    'https://api.deezer.com/playlist/1306931615', // Best Rock of All Time
+    'https://api.deezer.com/playlist/1180358611' // Rock Love Songs
+  ]
+  const responses = await Promise.all(urls.map(url => axios.get(url)))
+  return responses.map(r => r.data)
 }
