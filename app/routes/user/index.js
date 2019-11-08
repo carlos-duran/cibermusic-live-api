@@ -9,6 +9,7 @@ module.exports = async app => {
   app.get('/search', search)
   app.get('/home-music', homeMusic)
   app.register(require('./playlists'), { prefix: '/playlists' })
+  app.register(require('./playlistcustom'), { prefix: '/playlistcustom' })
 }
 
 const authHook = async request => {
