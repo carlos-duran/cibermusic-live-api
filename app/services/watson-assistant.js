@@ -45,7 +45,6 @@ module.exports = {
         text
       }
     })
-    console.log(JSON.stringify(response.result, null, 2))
     return response.result.output.generic[0].text
   }
 }
