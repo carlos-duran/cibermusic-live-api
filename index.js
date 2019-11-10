@@ -9,6 +9,9 @@ app.register(require('fastify-cors'))
 app.register(require('fastify-jwt'), { secret: process.env.JWT_SECRET })
 // app.setErrorHandler(require('./config/error-handler'))
 
+const io = require('socket.io')(app.server)
+io.on('connection', require('./app/sockets'))
+
 // Load models
 requireDir('./app/models')
 
