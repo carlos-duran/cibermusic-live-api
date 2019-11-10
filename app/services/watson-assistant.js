@@ -16,42 +16,36 @@ const service = new AssistantV2({
 
 module.exports = {
   async createSession(identifier) {
-    try {
-      const { session_id: sessionId } = await service.createSession({
-        assistantId
-      })
-      sessions[identifier] = sessionId
-    } catch (e) {
-      console.log(e)
+    const response = await service.createSession({
+      assistantId
+    })
+    console.log(response.result)
+    if (response.status === 201) {
+      sessions[identifier] = response.result.session_id
+    } else {
+      throw new Error('Invalid request')
     }
   },
 
   async deleteSession(identifier) {
-    try {
-      await service.deleteSession({
-        assistantId,
-        sessionId: sessions[identifier]
-      })
-      sessions[identifier] = null
-    } catch (e) {
-      console.log(e)
-    }
+    await service.deleteSession({
+      assistantId,
+      sessionId: sessions[identifier]
+    })
+    sessions[identifier] = null
   },
 
-  async message(identifier, message) {
-    try {
-      const result = await service.message({
-        assistantId,
-        sessionId: sessions[identifier],
-        input: {
-          message_type: 'text',
-          text: message
-        }
-      })
-      console.log(result)
-      return result
-    } catch (error) {
-      console.log(error)
-    }
+  async message(identifier, text) {
+    console.log(sessions[identifier])
+    const response = await service.message({
+      assistantId,
+      sessionId: sessions[identifier],
+      input: {
+        message_type: 'text',
+        text
+      }
+    })
+    console.log(JSON.stringify(response.result, null, 2))
+    return response.result.output.generic[0].text
   }
 }
