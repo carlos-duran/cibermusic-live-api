@@ -36,6 +36,10 @@ const userSchema = new mongoose.Schema(
     admin: {
       type: Boolean,
       default: false
+    },
+    active: {
+      type: Boolean,
+      default: true
     }
   },
   {
@@ -65,8 +69,10 @@ userSchema.pre('save', async function() {
 
 userSchema.static('login', async function login({ email, password }) {
   const user = await this.findOne({ email })
-  const res = user && (await bcrypt.compare(password, user.password))
-  return res && user
+  if (user.active !== false) {
+    const res = user && (await bcrypt.compare(password, user.password))
+    return res && user
+  }
 })
 
 module.exports = mongoose.model('User', userSchema)
