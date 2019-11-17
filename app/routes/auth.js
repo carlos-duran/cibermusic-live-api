@@ -83,7 +83,14 @@ const signup = {
       throw new BadRequest('Usted debe ser mayor de edad.')
     }
     try {
-      return await User.create(req.body)
+      const user = await User.findOne({ email: req.body.email, active: false })
+      if (user) {
+        user.set(req.body)
+        user.active = true
+        return await user.save()
+      } else {
+        return await User.create(req.body)
+      }
     } catch (error) {
       if (error.code === 11000) {
         throw new BadRequest('El correo electrónico ya está siendo usado')
