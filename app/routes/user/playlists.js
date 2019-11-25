@@ -71,10 +71,47 @@ const addSong = {
   schema: {
     body: {
       type: 'object',
-      required: ['id'],
+      required: ['id', 'title', 'title_short', 'artist', 'album', 'preview'],
       properties: {
         id: {
           type: 'number'
+        },
+        title: {
+          type: 'string'
+        },
+        title_short: {
+          type: 'string'
+        },
+        artist: {
+          type: 'object',
+          properties: {
+            name: {
+              type: 'string'
+            },
+            picture_medium: {
+              type: 'string'
+            }
+          }
+        },
+        album: {
+          type: 'object',
+          properties: {
+            cover_small: {
+              type: 'string'
+            },
+            cover_medium: {
+              type: 'string'
+            },
+            cover_big: {
+              type: 'string'
+            },
+            title: {
+              type: 'string'
+            }
+          }
+        },
+        preview: {
+          type: 'string'
         }
       }
     }
@@ -87,7 +124,7 @@ const addSong = {
       },
       {
         $addToSet: {
-          songs: request.body.id
+          songs: request.body
         }
       }
     )

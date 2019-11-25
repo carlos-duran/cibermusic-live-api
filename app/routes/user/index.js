@@ -22,6 +22,9 @@ const authHook = async request => {
 
 async function search(request) {
   const baseUrl = 'https://api.deezer.com/search'
-  const { data } = await axios.get(baseUrl, { params: { q: request.query.q } })
+  const { data } = await axios.get(baseUrl, {
+    timeout: 3000,
+    params: { q: request.query.q }
+  })
   return data
 }
