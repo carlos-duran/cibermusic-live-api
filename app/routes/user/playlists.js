@@ -160,7 +160,7 @@ async function removeSong(request) {
     },
     {
       $pull: {
-        tracks: { id: request.params.trackId }
+        tracks: { _id: request.params.trackId }
       }
     }
   )
