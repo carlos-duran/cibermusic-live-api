@@ -3,10 +3,11 @@ const Playlist = require('../../models/playlist')
 module.exports = async app => {
   app.get('/', list)
   app.post('/', create)
+  app.delete('/:playlistId', remove)
   app.get('/:playlistId', show)
   app.put('/:playlistId', update)
   app.post('/:playlistId/song', addSong)
-  app.delete('/:playlistId/song', removeSong)
+  app.delete('/:playlistId/:trackId', removeSong)
 }
 
 async function list(request) {
@@ -67,6 +68,13 @@ const update = {
   }
 }
 
+async function remove(request) {
+  return Playlist.deleteOne({
+    _id: request.params.playlistId,
+    user: request.user.id
+  })
+}
+
 const addSong = {
   schema: {
     body: {
@@ -84,6 +92,7 @@ const addSong = {
         },
         artist: {
           type: 'object',
+          required: ['name', 'picture_medium'],
           properties: {
             name: {
               type: 'string'
@@ -95,6 +104,7 @@ const addSong = {
         },
         album: {
           type: 'object',
+          required: ['cover_small', 'cover_medium', 'cover_big', 'title'],
           properties: {
             cover_small: {
               type: 'string'
@@ -124,36 +134,23 @@ const addSong = {
       },
       {
         $addToSet: {
-          songs: request.body
+          tracks: request.body
         }
       }
     )
   }
 }
 
-const removeSong = {
-  schema: {
-    body: {
-      type: 'object',
-      required: ['id'],
-      properties: {
-        id: {
-          type: 'number'
-        }
+async function removeSong(request) {
+  return Playlist.update(
+    {
+      _id: request.params.playlistId,
+      user: request.user.id
+    },
+    {
+      $pull: {
+        'tracks.id': request.params.trackId
       }
     }
-  },
-  async handler(request) {
-    return Playlist.update(
-      {
-        _id: request.params.playlistId,
-        user: request.user.id
-      },
-      {
-        $pull: {
-          'tracks.id': request.body.id
-        }
-      }
-    )
-  }
+  )
 }
