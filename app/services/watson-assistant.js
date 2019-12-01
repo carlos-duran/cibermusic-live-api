@@ -43,6 +43,6 @@ module.exports = {
         text
       }
     })
-    return response.result.output.generic[0].text
+    return response.result.output
   }
 }
