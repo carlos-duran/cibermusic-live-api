@@ -14,7 +14,8 @@ const trackSchema = new mongoose.Schema({
     cover_big: String,
     title: String
   },
-  preview: String
+  preview: String,
+  duration: Number
 })
 
 const playlistSchema = new mongoose.Schema(

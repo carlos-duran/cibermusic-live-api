@@ -11,7 +11,7 @@ module.exports = async app => {
 }
 
 async function list(request) {
-  return Playlist.find({ user: request.user.id }, '-songs')
+  return Playlist.find({ user: request.user.id })
 }
 
 const create = {
@@ -79,7 +79,15 @@ const addSong = {
   schema: {
     body: {
       type: 'object',
-      required: ['id', 'title', 'title_short', 'artist', 'album', 'preview'],
+      required: [
+        'id',
+        'title',
+        'title_short',
+        'artist',
+        'album',
+        'preview',
+        'duration'
+      ],
       properties: {
         id: {
           type: 'number'
@@ -122,6 +130,9 @@ const addSong = {
         },
         preview: {
           type: 'string'
+        },
+        duration: {
+          type: 'number'
         }
       }
     }
@@ -142,14 +153,14 @@ const addSong = {
 }
 
 async function removeSong(request) {
-  return Playlist.update(
+  return Playlist.updateOne(
     {
       _id: request.params.playlistId,
       user: request.user.id
     },
     {
       $pull: {
-        'tracks.id': request.params.trackId
+        tracks: { id: request.params.trackId }
       }
     }
   )
