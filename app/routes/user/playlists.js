@@ -11,13 +11,13 @@ module.exports = async app => {
 }
 
 async function list(request) {
-  const playlists = await Playlist.find({ user: request.user.id })
+  const playlists = await Playlist.find({ user: request.user._id })
     .sort('-special')
     .exec()
   if (!playlists.some(p => p.special === 'favorites')) {
     const favorites = await Playlist.create({
       name: 'Favoritos',
-      user: request.user.id,
+      user: request.user._id,
       special: 'favorites'
     })
     playlists.unshift(favorites)
@@ -41,7 +41,7 @@ const create = {
   async handler(request) {
     return Playlist.create({
       name: request.body.name,
-      user: request.user.id
+      user: request.user._id
     })
   }
 }
@@ -49,7 +49,7 @@ const create = {
 async function show(request) {
   return Playlist.findOne({
     _id: request.params.playlistId,
-    user: request.user.id
+    user: request.user._id
   })
 }
 
@@ -70,7 +70,7 @@ const update = {
     return Playlist.update(
       {
         _id: request.params.playlistId,
-        user: request.user.id,
+        user: request.user._id,
         special: null
       },
       {
@@ -83,7 +83,7 @@ const update = {
 async function remove(request) {
   return Playlist.deleteOne({
     _id: request.params.playlistId,
-    user: request.user.id,
+    user: request.user._id,
     special: null
   })
 }
@@ -154,7 +154,7 @@ const addSong = {
     return Playlist.update(
       {
         _id: request.params.playlistId,
-        user: request.user.id,
+        user: request.user._id,
         'tracks.id': { $ne: request.body.id }
       },
       {
@@ -170,7 +170,7 @@ async function removeSong(request) {
   return Playlist.updateOne(
     {
       _id: request.params.playlistId,
-      user: request.user.id,
+      user: request.user._id,
       'tracks.id': request.params.trackId
     },
     {
