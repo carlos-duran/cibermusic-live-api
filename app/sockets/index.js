@@ -1,5 +1,5 @@
 const assistantService = require('../services/watson-assistant')
-const actions = require('../utils/watson-mapping')
+const getAnswer = require('../utils/watson-mapping')
 
 module.exports = async function connectionHandler(socket) {
   await startChat.call(socket)
@@ -15,18 +15,15 @@ async function startChat() {
 async function onChat(message) {
   const socket = this
   const author = 'bot'
-  let text = ''
-  let action = null
+  let answer = {}
   try {
     const output = await assistantService.message(socket.id, message.text)
-    text = output.generic[0].text
-    if (output.intents.length) {
-      action = actions[output.intents[0].intent]
-    }
+    answer = getAnswer(output)
   } catch (error) {
-    text = 'Regreso en un momento...'
+    console.log(error)
+    answer.text = 'Regreso en un momento...'
     startChat.call(socket)
   }
 
-  socket.emit('chat', { action, author, text })
+  socket.emit('chat', { ...answer, author })
 }
