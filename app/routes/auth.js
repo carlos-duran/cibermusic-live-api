@@ -85,9 +85,15 @@ const signup = {
     try {
       const user = await User.findOne({ email: req.body.email, active: false })
       if (user) {
-        user.set(req.body)
-        user.active = true
-        return await user.save()
+        if (!user.active) {
+          user.set(req.body)
+          user.active = true
+          return await user.save()
+        } else {
+          const error = new Error()
+          error.code = 11000
+          throw error
+        }
       } else {
         return await User.create(req.body)
       }
